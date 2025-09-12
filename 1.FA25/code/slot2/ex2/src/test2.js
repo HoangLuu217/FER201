@@ -42,3 +42,7 @@ adultsOver20.forEach(person => {
     console.log(`${person.name} is ${person.age} years old`);
 });
 
+// Tính tổng số tuổi
+const totalAge = people.reduce((sum, person) => sum + person.age, 0);
+console.log("\nTotal age of all people:", totalAge);
+
