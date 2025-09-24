@@ -9,10 +9,19 @@ const people = [
 ];
 
 // Filter teens and map to formatted strings
-const teens = people
-    .filter(person => person.age >= 13 && person.age <= 19)
-    .map(person => `${person.name} (${person.age})`);
+// const countTeens = people.reduce((count, person) => {
+//     return count + (person.age >= 13 && person.age <= 19 ? 1 : 0);
+// },0);
+// console.log('co  ${countTeens} tuoi teens.');
 
-// Print results line by line
-console.log("Teens (13-19):");
-teens.forEach(teen => console.log(teen));
+const sortByName = [...people].sort((a, b) => a.name.localeCompare(b.name))
+.filter(person => person.age >= 13 && person.age <= 19).slice(0,2);
+console.log("Sorted by name:");
+sortByName.forEach(person => console.log(person.name + ' có ' + person.age + ' tuổi'));
+// const teens = people
+//     .filter(person => person.age >= 13 && person.age <= 19);
+//    // .map(person => `${person.name} (${person.age})`);
+
+// // Print results line by line
+// console.log("Teens (13-19):");
+// teens.forEach(teen => console.log(teen.name + ' có ' + teen.age + ' tuổi'));

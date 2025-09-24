@@ -30,4 +30,4 @@ console.log("\nModified copy (start year + 1):");
 console.log(company0New);
 
 console.log("\nTesting concatAll function:");
-console.log(concatAll([1,2], [3], [4,5]));// Output: [1,2,3,4,5]
+console.log(concatAll([1,2], [],[3], [4,5]));// Output: [1,2,3,4,5]
