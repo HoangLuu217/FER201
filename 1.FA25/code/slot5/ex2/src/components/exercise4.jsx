@@ -26,6 +26,7 @@ const [first3, , third3 = 0, ...restAges3] = ages3;
         <h2>test with ages = [33, 12, 20, 16]</h2>
         <p>First: {first}</p>
         <p>Third: {third}</p>
+        <p>RestAges: {restAges.toString()}</p>
         <h2>Test with Longer ages2 = [33, 12, 20, 16, 5, 54];</h2>
         <p>First2: {first2}</p>
         <p>Third2: {third2}</p>

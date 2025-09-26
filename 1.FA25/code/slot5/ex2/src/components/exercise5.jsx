@@ -21,9 +21,12 @@ export default function exercise5() {
     //filter people age >= 13 and <= 19 and sort by name
     const teens = people.filter(person => person.age >= 13 && person.age <= 19)
     .sort((a, b) => a.name.localeCompare(b.name));
+
+    const second = people[1];
     return (
         <div>
             <h1>Exercise 5</h1>
+            <h2>second: {second.name} - {second.age} : teens ? {teens.includes(second) ? 'Yes' : 'No'}</h2>
             <p>Teens:</p>
             <table width={100} height={100} center border={1} cellPadding={5} cellSpacing={0}>
             <thead>
