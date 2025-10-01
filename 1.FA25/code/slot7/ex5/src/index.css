@@ -1,0 +1,43 @@
+:root {
+  --bs-orange: #ff8000;
+  --bs-light-orange: #EAC7A7;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Custom Bootstrap color classes */
+.bg-orange {
+  background-color: var(--bs-orange) !important;
+}
+
+.bg-light-orange {
+  background-color: var(--bs-light-orange) !important;
+}
+
+.text-orange {
+  color: var(--bs-orange) !important;
+}
+
+.btn-orange {
+  background-color: var(--bs-orange) !important;
+  border-color: var(--bs-orange) !important;
+  color: white !important;
+}
+
+.btn-orange:hover {
+  background-color: #e67300 !important;
+  border-color: #e67300 !important;
+  color: white !important;
+}

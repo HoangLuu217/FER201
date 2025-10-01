@@ -1,0 +1,28 @@
+.App {
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom styles for the grid layout */
+.header-section {
+  background-color: #f8f8f8 !important;
+}
+
+.grid-cell {
+  border: 1px solid #333;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.footer-section {
+  background-color: #d8c0c0 !important;
+}
+
+/* Remove default margins and padding */
+body {
+  margin: 0;
+  padding: 0;
+}
