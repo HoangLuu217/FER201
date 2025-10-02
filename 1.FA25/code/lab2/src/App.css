@@ -1,0 +1,67 @@
+/* Custom styles for Pizza House */
+.App {
+  min-height: 100vh;
+}
+
+.banner-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.banner-section img {
+  filter: brightness(0.8);
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.card {
+  transition: transform 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.badge {
+  font-size: 0.8rem;
+  z-index: 10;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+  font-weight: 600;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #000;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #ffc107;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .banner-section img {
+    height: 300px !important;
+  }
+  
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .lead {
+    font-size: 1rem;
+  }
+}
