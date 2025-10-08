@@ -25,7 +25,7 @@ const MenuSection = () => {
                   <button className="btn btn-dark w-100">Buy</button>
                 </div>
               </div>
-            </div>
+            </div>  
           </div>
 
           {/* Mushroom Pizza */}
@@ -69,7 +69,7 @@ const MenuSection = () => {
                     <span className="text-decoration-line-through text-muted">$50.00</span>
                     <span className="fw-bold text-danger ms-2">$30.00</span>
                   </p>
-                  <button className="btn btn-dark w-100">Buy</button>
+                  <button className="btn btn-primary w-100">Buy</button>
                 </div>
               </div>
             </div>

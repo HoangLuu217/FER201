@@ -30,7 +30,7 @@ const Banner = () => {
 
   // Auto-slide functionality
   useEffect(() => {
-    const interval = setInterval(nextSlide, 5000); // Change slide every 5 seconds
+    const interval = setInterval(nextSlide, 2000); // Change slide every 5 seconds
     return () => clearInterval(interval);
   }, [nextSlide]);
 

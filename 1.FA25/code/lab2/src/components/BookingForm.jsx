@@ -19,11 +19,17 @@ const BookingForm = () => {
                 </div>
                 <div className="col-md-4">
                   <label htmlFor="service" className="form-label text-white">Select a Service</label>
-                  <select className="form-select" id="service">
-                    <option>Dine In</option>
-                    <option>Take Away</option>
-                    <option>Delivery</option>
-                  </select>
+                  <div className="dropdown">
+                    <button className="btn btn-secondary dropdown-toggle w-100" type="button" id="serviceDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                      Select a Service
+                    </button>
+                    <ul className="dropdown-menu dropdown-menu-dark" aria-labelledby="serviceDropdown">
+                      <li><a className="dropdown-item" href="#">Dine In</a></li>
+                      <li><a className="dropdown-item" href="#">Take Away</a></li>
+                      <li><a className="dropdown-item" href="#">Delivery</a></li>
+                    </ul>
+                  </div>
+                  
                 </div>
               </div>
               <div className="mb-3">
