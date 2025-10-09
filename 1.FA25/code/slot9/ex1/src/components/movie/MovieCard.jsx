@@ -8,7 +8,7 @@ function MovieCard() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  // Lấy danh sách phim yêu thích từ localStorage
+ 
   const getFavourites = () => {
     const favourites = localStorage.getItem('movieFavourites');
     return favourites ? JSON.parse(favourites) : [];
@@ -51,7 +51,7 @@ function MovieCard() {
                 src={movie.poster} 
                 alt={`${movie.title} poster`}
                 className="object-fit-cover"
-                style={{ height: '300px' }}
+                style={{ height: '500px' }}
               />
               <Card.Body className="d-flex flex-column p-4">
                 <Card.Title className="h5 mb-3 text-dark fw-semibold">{movie.title}</Card.Title>
