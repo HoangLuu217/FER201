@@ -1,5 +1,7 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useState } from 'react';
 import { Button, Form, Card, Alert } from 'react-bootstrap';
+import { ToastProvider, useToast } from './ToastMessage';
+import ConfirmModal from './ConfirmModal';
 
 // 1. Khởi tạo trạng thái ban đầu
 const initialState = {
@@ -53,9 +55,21 @@ function signUpReducer(state, action) {
   }
 }
 
-function SignUpForm() {
+function SignUpFormContent() {
   // 3. Sử dụng useReducer để quản lý trạng thái
   const [state, dispatch] = useReducer(signUpReducer, initialState);
+  const { showSuccess, showError, showInfo } = useToast();
+  const [modalState, setModalState] = useState({
+    show: false,
+    title: '',
+    message: '',
+    type: 'info',
+    confirmText: 'Xác nhận',
+    cancelText: 'Hủy',
+    showCancel: true,
+    confirmVariant: 'primary',
+    cancelVariant: 'secondary'
+  });
 
   // Action handlers
   const handleFieldChange = (field) => (e) => {
@@ -104,19 +118,48 @@ function SignUpForm() {
     
     if (Object.keys(errors).length > 0) {
       dispatch({ type: 'SET_ERRORS', payload: errors });
+      showError('Vui lòng kiểm tra lại thông tin đã nhập', 'Lỗi xác thực');
       return;
     }
 
-    dispatch({ type: 'SIGNUP_START' });
-
-    // Simulate API call
-    setTimeout(() => {
-      dispatch({ type: 'SIGNUP_SUCCESS' });
-    }, 1500);
+    // Hiển thị modal xác nhận trước khi đăng ký
+    setModalState({
+      show: true,
+      title: 'Xác nhận đăng ký',
+      message: `Bạn có chắc chắn muốn đăng ký tài khoản với email "${state.email}" không?`,
+      type: 'info',
+      confirmText: 'Đăng ký',
+      cancelText: 'Hủy',
+      confirmVariant: 'success',
+      onConfirm: () => {
+        // Thực hiện đăng ký
+        dispatch({ type: 'SIGNUP_START' });
+        showInfo('Đang xử lý đăng ký...', 'Đang tạo tài khoản');
+        
+        // Simulate API call
+        setTimeout(() => {
+          dispatch({ type: 'SIGNUP_SUCCESS' });
+          showSuccess(`Chào mừng ${state.firstName} ${state.lastName}! Đăng ký thành công.`, 'Đăng ký thành công');
+        }, 1500);
+      }
+    });
   };
 
   const handleReset = () => {
-    dispatch({ type: 'RESET_FORM' });
+    // Hiển thị modal xác nhận trước khi reset
+    setModalState({
+      show: true,
+      title: 'Xác nhận làm mới',
+      message: 'Bạn có chắc chắn muốn làm mới form và xóa tất cả dữ liệu đã nhập không?',
+      type: 'warning',
+      confirmText: 'Làm mới',
+      cancelText: 'Hủy',
+      confirmVariant: 'warning',
+      onConfirm: () => {
+        dispatch({ type: 'RESET_FORM' });
+        showInfo('Form đã được làm mới', 'Đã reset');
+      }
+    });
   };
 
   if (state.isSignedUp) {
@@ -136,10 +179,11 @@ function SignUpForm() {
   }
 
   return (
-    <Card style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
-      <h2 className="text-center mb-4">Đăng Ký Tài Khoản</h2>
-      
-      <Form onSubmit={handleSubmit}>
+    <div>
+      <Card style={{ padding: '20px', maxWidth: '500px', margin: '0 auto' }}>
+        <h2 className="text-center mb-4">Đăng Ký Tài Khoản</h2>
+        
+        <Form onSubmit={handleSubmit}>
         <div className="row">
           <div className="col-md-6">
             <Form.Group className="mb-3">
@@ -255,6 +299,31 @@ function SignUpForm() {
         </div>
       </Form>
     </Card>
+    
+      {/* ConfirmModal */}
+      <ConfirmModal
+        show={modalState.show}
+        onHide={() => setModalState({ ...modalState, show: false })}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+        confirmText={modalState.confirmText}
+        cancelText={modalState.cancelText}
+        showCancel={modalState.showCancel}
+        confirmVariant={modalState.confirmVariant}
+        cancelVariant={modalState.cancelVariant}
+        onConfirm={modalState.onConfirm}
+      />
+  </div>
+  );
+}
+
+// Wrapper component với Provider
+function SignUpForm() {
+  return (
+    <ToastProvider>
+      <SignUpFormContent />
+    </ToastProvider>
   );
 }
 

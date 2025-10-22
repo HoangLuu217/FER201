@@ -1,5 +1,7 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useState } from 'react';
 import { Button, Form, Card, Alert } from 'react-bootstrap';
+import { ToastProvider, useToast } from './ToastMessage';
+import ConfirmModal from './ConfirmModal';
 
 // 1. Khởi tạo trạng thái ban đầu
 const initialState = {
@@ -43,9 +45,21 @@ function loginReducer(state, action) {
   }
 }
 
-function LoginForm() {
+function LoginFormContent() {
   // 3. Sử dụng useReducer để quản lý trạng thái
   const [state, dispatch] = useReducer(loginReducer, initialState);
+  const { showSuccess, showError, showInfo } = useToast();
+  const [modalState, setModalState] = useState({
+    show: false,
+    title: '',
+    message: '',
+    type: 'info',
+    confirmText: 'Xác nhận',
+    cancelText: 'Hủy',
+    showCancel: true,
+    confirmVariant: 'primary',
+    cancelVariant: 'secondary'
+  });
 
   // Action handlers
   const handleUsernameChange = (e) => {
@@ -61,23 +75,49 @@ function LoginForm() {
     
     if (!state.username || !state.password) {
       dispatch({ type: 'LOGIN_FAILURE', payload: 'Vui lòng nhập đầy đủ thông tin' });
+      showError('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu', 'Thiếu thông tin');
       return;
     }
 
-    dispatch({ type: 'LOGIN_START' });
-
-    // Simulate API call
-    setTimeout(() => {
-      if (state.username === 'admin' && state.password === 'password') {
-        dispatch({ type: 'LOGIN_SUCCESS' });
-      } else {
-        dispatch({ type: 'LOGIN_FAILURE', payload: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+    // Hiển thị modal xác nhận trước khi đăng nhập
+    setModalState({
+      show: true,
+      title: 'Xác nhận đăng nhập',
+      message: `Bạn có chắc chắn muốn đăng nhập với tài khoản "${state.username}" không?`,
+      type: 'info',
+      confirmText: 'Đăng nhập',
+      cancelText: 'Hủy',
+      confirmVariant: 'primary',
+      onConfirm: () => {
+        // Thực hiện đăng nhập
+        dispatch({ type: 'LOGIN_START' });
+        showInfo('Đang xác thực thông tin đăng nhập...', 'Đang đăng nhập');
+        
+        // Simulate API call
+        setTimeout(() => {
+          if (state.username === 'admin' && state.password === 'password') {
+            dispatch({ type: 'LOGIN_SUCCESS' });
+            showSuccess(`Chào mừng ${state.username}! Đăng nhập thành công.`, 'Đăng nhập thành công');
+          } else {
+            dispatch({ type: 'LOGIN_FAILURE', payload: 'Tên đăng nhập hoặc mật khẩu không đúng' });
+            showError('Tên đăng nhập hoặc mật khẩu không đúng', 'Đăng nhập thất bại');
+          }
+        }, 1000);
       }
-    }, 1000);
+    });
   };
 
   const handleLogout = () => {
-    dispatch({ type: 'LOGOUT' });
+    // Hiển thị modal xác nhận trước khi đăng xuất
+    setModalState({
+      show: true,
+      title: 'Xác nhận đăng xuất',
+      message: 'Bạn có chắc chắn muốn đăng xuất khỏi hệ thống không?',
+      type: 'warning',
+      confirmText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      confirmVariant: 'danger'
+    });
   };
 
   if (state.isLoggedIn) {
@@ -97,54 +137,80 @@ function LoginForm() {
   }
 
   return (
-    <Card style={{ padding: '20px', maxWidth: '400px', margin: '0 auto' }}>
-      <h2 className="text-center mb-4">Đăng Nhập</h2>
+    <div>
+      <Card style={{ padding: '20px', maxWidth: '400px', margin: '0 auto' }}>
+        <h2 className="text-center mb-4">Đăng Nhập</h2>
+        
+        {state.error && (
+          <Alert variant="danger" onClose={() => dispatch({ type: 'CLEAR_ERROR' })} dismissible>
+            {state.error}
+          </Alert>
+        )}
+
+        <Form onSubmit={handleLogin}>
+          <Form.Group className="mb-3">
+            <Form.Label>Tên đăng nhập</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Nhập tên đăng nhập"
+              value={state.username}
+              onChange={handleUsernameChange}
+              disabled={state.isLoading}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Mật khẩu</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Nhập mật khẩu"
+              value={state.password}
+              onChange={handlePasswordChange}
+              disabled={state.isLoading}
+            />
+          </Form.Group>
+
+          <Button 
+            variant="primary" 
+            type="submit" 
+            className="w-100"
+            disabled={state.isLoading}
+          >
+            {state.isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+          </Button>
+        </Form>
+
+        <div className="mt-3 text-center">
+          <small className="text-muted">
+            Demo: username = "admin", password = "password"
+          </small>
+        </div>
+      </Card>
       
-      {state.error && (
-        <Alert variant="danger" onClose={() => dispatch({ type: 'CLEAR_ERROR' })} dismissible>
-          {state.error}
-        </Alert>
-      )}
+      {/* ConfirmModal */}
+      <ConfirmModal
+        show={modalState.show}
+        onHide={() => setModalState({ ...modalState, show: false })}
+        title={modalState.title}
+        message={modalState.message}
+        type={modalState.type}
+        confirmText={modalState.confirmText}
+        cancelText={modalState.cancelText}
+        showCancel={modalState.showCancel}
+        confirmVariant={modalState.confirmVariant}
+        cancelVariant={modalState.cancelVariant}
+        onConfirm={modalState.onConfirm}
+      />
+    </div>
+  );
+}
 
-      <Form onSubmit={handleLogin}>
-        <Form.Group className="mb-3">
-          <Form.Label>Tên đăng nhập</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Nhập tên đăng nhập"
-            value={state.username}
-            onChange={handleUsernameChange}
-            disabled={state.isLoading}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3">
-          <Form.Label>Mật khẩu</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Nhập mật khẩu"
-            value={state.password}
-            onChange={handlePasswordChange}
-            disabled={state.isLoading}
-          />
-        </Form.Group>
-
-        <Button 
-          variant="primary" 
-          type="submit" 
-          className="w-100"
-          disabled={state.isLoading}
-        >
-          {state.isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-        </Button>
-      </Form>
-
-      <div className="mt-3 text-center">
-        <small className="text-muted">
-          Demo: username = "admin", password = "password"
-        </small>
-      </div>
-    </Card>
+// Wrapper component với Provider
+function LoginForm() {
+  return (
+    <ToastProvider>
+      <LoginFormContent />
+    </ToastProvider>
   );
 }
 
