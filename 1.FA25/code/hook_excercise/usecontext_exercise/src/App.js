@@ -33,14 +33,7 @@ function AppContent() {
 
   return (
     <div style={appStyle}>
-      <div style={headerStyle}>
-        <h1 style={{ 
-          color: theme === 'light' ? '#007bff' : '#6f42c1',
-          marginBottom: '20px'
-        }}>
-          🚀 React useContext Demo
-        </h1>
-        
+      <div style={headerStyle}>        
         {/* User Info Section */}
         {user ? (
           <div style={{
