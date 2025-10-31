@@ -4,7 +4,15 @@ import { useMovieState, useMovieDispatch } from '../contexts/MovieContext';
 import { useAuth } from '../contexts/AuthContext';
 
 const MovieTable = () => {
-  const { movies, genres, loading, movieToDelete, showDeleteModal } = useMovieState();
+  const {
+    movies,
+    genres,
+    loading,
+    movieToDelete,
+    showDeleteModal,
+    movieToView,
+    showDetailModal
+  } = useMovieState();
   const { dispatch, confirmDelete } = useMovieDispatch();
   const { user } = useAuth();
   const canManage = user?.role === 'admin';
@@ -32,12 +40,17 @@ const MovieTable = () => {
     dispatch({ type: 'OPEN_EDIT_MODAL', payload: movie });
   };
 
+  const handleViewClick = (movie) => {
+    dispatch({ type: 'OPEN_DETAIL_MODAL', payload: movie });
+  };
+
   const handleDeleteClick = (movie) => {
     if (!canManage) return;
     dispatch({ type: 'OPEN_DELETE_MODAL', payload: movie });
   };
 
   const closeDeleteModal = () => dispatch({ type: 'CLOSE_DELETE_MODAL' });
+  const closeDetailModal = () => dispatch({ type: 'CLOSE_DETAIL_MODAL' });
 
   return (
     <>
@@ -63,7 +76,7 @@ const MovieTable = () => {
               <th>Duration (minutes)</th>
               <th>Year</th>
               <th>Country</th>
-              {canManage && <th>Actions</th>}
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -90,21 +103,35 @@ const MovieTable = () => {
                   <td>{movie.duration} min</td>
                   <td>{movie.year}</td>
                   <td>{movie.country}</td>
-                  {canManage && (
-                    <td>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleEditClick(movie)}
-                      >
-                        Edit
-                      </Button>
-                      <Button variant="danger" size="sm" onClick={() => handleDeleteClick(movie)}>
-                        Delete
-                      </Button>
-                    </td>
-                  )}
+                  <td>
+                    <Button
+                      variant="info"
+                      size="sm"
+                      className="me-2 text-white"
+                      onClick={() => handleViewClick(movie)}
+                    >
+                      View Details
+                    </Button>
+                    {canManage && (
+                      <>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => handleEditClick(movie)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleDeleteClick(movie)}
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    )}
+                  </td>
                 </tr>
               );
             })}
@@ -135,6 +162,51 @@ const MovieTable = () => {
             onClick={() => movieToDelete && confirmDelete(movieToDelete.id)}
           >
             Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showDetailModal} onHide={closeDetailModal} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Movie Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {movieToView ? (
+            <div className="d-flex flex-column flex-md-row gap-4">
+              <Image
+                src={movieToView.avatar}
+                alt={movieToView.title}
+                rounded
+                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+              />
+              <div>
+                <h4 className="mb-3">{movieToView.title}</h4>
+                <p className="text-muted">
+                  {movieToView.description || 'No description available.'}
+                </p>
+                <div>
+                  <div>
+                    <strong>Genre:</strong> {genreMap[movieToView.genreId] || 'Unknown'}
+                  </div>
+                  <div>
+                    <strong>Duration:</strong> {movieToView.duration} min
+                  </div>
+                  <div>
+                    <strong>Year:</strong> {movieToView.year}
+                  </div>
+                  <div>
+                    <strong>Country:</strong> {movieToView.country}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            'Movie not found.'
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={closeDetailModal}>
+            Close
           </Button>
         </Modal.Footer>
       </Modal>

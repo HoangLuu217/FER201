@@ -14,7 +14,9 @@ export const initialMovieState = {
   },
   showEditModal: false,
   showDeleteModal: false,
+  showDetailModal: false,
   movieToDelete: null,
+  movieToView: null,
   filters: {
     q: '',
     genreId: '',
@@ -85,6 +87,20 @@ export const movieReducer = (state, action) => {
         ...state,
         movieToDelete: null,
         showDeleteModal: false
+      };
+
+    case 'OPEN_DETAIL_MODAL':
+      return {
+        ...state,
+        movieToView: action.payload,
+        showDetailModal: true
+      };
+
+    case 'CLOSE_DETAIL_MODAL':
+      return {
+        ...state,
+        movieToView: null,
+        showDetailModal: false
       };
 
     case 'SET_FILTERS':
