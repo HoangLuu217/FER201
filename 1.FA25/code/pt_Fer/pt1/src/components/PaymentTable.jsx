@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Card, Spinner, Alert, Badge, Button, ButtonGroup } from 'react-bootstrap';
 import { usePayment } from '../contexts/PaymentContext';
+import { useToast } from './ToastMessage';
 import { FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import ViewDetailsModal from './ViewDetailsModal';
 import EditPaymentModal from './EditPaymentModal';
@@ -8,6 +9,7 @@ import ConfirmModal from './ConfirmModal';
 
 const PaymentTable = () => {
     const { payments, isLoading, error, totalAmount, deletePayment } = usePayment();
+    const { showSuccess, showError } = useToast();
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [showViewModal, setShowViewModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -49,10 +51,20 @@ const PaymentTable = () => {
 
     const handleConfirmDelete = async () => {
         if (paymentToDelete) {
+            const courseName = paymentToDelete.courseName;
             const result = await deletePayment(paymentToDelete.id);
             if (result.success) {
                 setShowDeleteModal(false);
                 setPaymentToDelete(null);
+                showSuccess(
+                    `Đã xóa thanh toán "${courseName}" thành công!`,
+                    'Xóa thành công'
+                );
+            } else {
+                showError(
+                    result.error || 'Không thể xóa thanh toán',
+                    'Lỗi xóa'
+                );
             }
         }
     };

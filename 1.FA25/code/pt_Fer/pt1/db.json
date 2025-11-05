@@ -71,14 +71,6 @@
       "date": "2025-04-05"
     },
     {
-      "semester": "Summer 2025",
-      "courseName": "Cloud Computing",
-      "amount": 4801000,
-      "date": "2025-07-10",
-      "userId": "1",
-      "id": "8"
-    },
-    {
       "id": "10",
       "userId": "1",
       "semester": "Fall 2025",
@@ -87,11 +79,19 @@
       "date": "2025-10-15"
     },
     {
-      "id": "6738",
+      "id": "f0f2",
+      "semester": "Spring 2026",
+      "courseName": "Gradua",
+      "amount": 200000,
+      "date": "2026-12-02",
+      "userId": "1"
+    },
+    {
+      "id": "dc4e",
       "semester": "Fall 2026",
-      "courseName": "OJT",
-      "amount": 20000000,
-      "date": "2026-01-01",
+      "courseName": "S",
+      "amount": 23000000,
+      "date": "2026-12-02",
       "userId": "1"
     }
   ]
