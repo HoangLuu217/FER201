@@ -1,25 +1,10 @@
 import React from 'react';
-import { Container, Toast, ToastContainer } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { MovieProvider } from '../contexts/MovieContext';
 import MovieForm from '../components/MovieForm';
 import MovieTable from '../components/MovieTable';
 import FilterBar from '../components/FilterBar';
-import { useMovieDispatch, useMovieState } from '../contexts/MovieContext';
-
-const MovieToast = () => {
-  const { toast } = useMovieState();
-  const { dispatch } = useMovieDispatch();
-
-  const handleClose = () => dispatch({ type: 'HIDE_TOAST' });
-
-  return (
-    <ToastContainer position="bottom-end" className="p-3">
-      <Toast bg={toast.variant} onClose={handleClose} show={toast.show} delay={3000} autohide>
-        <Toast.Body className="text-white">{toast.message}</Toast.Body>
-      </Toast>
-    </ToastContainer>
-  );
-};
+import MovieToast from '../components/toast';
 
 const MovieManagerContent = () => (
   <Container className="mt-5">

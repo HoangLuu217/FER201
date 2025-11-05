@@ -1,7 +1,11 @@
+// src/components/MovieTable.jsx
 import React from 'react';
-import { Table, Button, Image, Modal, Alert, Spinner, Badge } from 'react-bootstrap';
+import { Table, Button, Image, Alert, Spinner, Badge } from 'react-bootstrap';
 import { useMovieState, useMovieDispatch } from '../contexts/MovieContext';
 import { useAuth } from '../contexts/AuthContext';
+
+// NEW: import modal tách file
+import ViewDetailModal from './modal';
 
 const MovieTable = () => {
   const {
@@ -138,78 +142,15 @@ const MovieTable = () => {
           </tbody>
         </Table>
       )}
+  
 
-      <Modal show={showDeleteModal && canManage} onHide={closeDeleteModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Delete Movie</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {movieToDelete ? (
-            <>
-              Do you really want to delete <strong>{movieToDelete.title}</strong> (ID:{' '}
-              {movieToDelete.id})?
-            </>
-          ) : (
-            'Movie not found.'
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeDeleteModal}>
-            Cancel
-          </Button>
-          <Button
-            variant="danger"
-            onClick={() => movieToDelete && confirmDelete(movieToDelete.id)}
-          >
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={showDetailModal} onHide={closeDetailModal} centered size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Movie Details</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {movieToView ? (
-            <div className="d-flex flex-column flex-md-row gap-4">
-              <Image
-                src={movieToView.avatar}
-                alt={movieToView.title}
-                rounded
-                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-              />
-              <div>
-                <h4 className="mb-3">{movieToView.title}</h4>
-                <p className="text-muted">
-                  {movieToView.description || 'No description available.'}
-                </p>
-                <div>
-                  <div>
-                    <strong>Genre:</strong> {genreMap[movieToView.genreId] || 'Unknown'}
-                  </div>
-                  <div>
-                    <strong>Duration:</strong> {movieToView.duration} min
-                  </div>
-                  <div>
-                    <strong>Year:</strong> {movieToView.year}
-                  </div>
-                  <div>
-                    <strong>Country:</strong> {movieToView.country}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            'Movie not found.'
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeDetailModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* NEW: Modal chi tiết phim */}
+      <ViewDetailModal
+        show={showDetailModal}
+        movie={movieToView}
+        genreMap={genreMap}
+        onClose={closeDetailModal}
+      />
     </>
   );
 };
