@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, Alert, Spinner } from 'react-bootstrap';
-import { usePayment } from '../contexts/PaymentContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { updatePayment } from '../store/paymentsSlice';
+import { selectUniqueSemesters, selectUniqueCourses } from '../store/selectors';
 
 const EditPaymentModal = ({ show, onHide, payment, onSuccess }) => {
-    const { updatePayment, getUniqueSemesters, getUniqueCourses } = usePayment();
+    const dispatch = useDispatch();
+    const semesters = useSelector(selectUniqueSemesters);
+    const courses = useSelector(selectUniqueCourses);
     const [formData, setFormData] = useState({
         semester: '',
         courseName: '',
@@ -78,29 +82,25 @@ const EditPaymentModal = ({ show, onHide, payment, onSuccess }) => {
 
         setIsLoading(true);
         try {
-            const result = await updatePayment(payment.id, {
-                ...formData,
-                amount: Number(formData.amount),
-                userId: payment.userId,
-            });
+            await dispatch(updatePayment({
+                id: payment.id,
+                paymentData: {
+                    ...formData,
+                    amount: Number(formData.amount),
+                    userId: payment.userId,
+                }
+            })).unwrap();
 
-            if (result.success) {
-                setSuccess(true);
-                setTimeout(() => {
-                    onSuccess();
-                }, 1000);
-            } else {
-                setError(result.error || 'Failed to update payment');
-            }
+            setSuccess(true);
+            setTimeout(() => {
+                onSuccess();
+            }, 1000);
         } catch (err) {
-            setError('An error occurred while updating payment');
+            setError(err || 'An error occurred while updating payment');
         } finally {
             setIsLoading(false);
         }
     };
-
-    const semesters = getUniqueSemesters();
-    const courses = getUniqueCourses();
 
     return (
         <Modal show={show} onHide={onHide} centered size="lg">

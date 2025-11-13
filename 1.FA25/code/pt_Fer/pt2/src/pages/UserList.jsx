@@ -1,35 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Modal, Table, Badge } from 'react-bootstrap';
-import * as api from '../services/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers, toggleAdminStatus } from '../store/usersSlice';
+import { selectAllUsers, selectUsersLoading } from '../store/selectors';
 import UserFilter from '../components/UserFilter';
 import UserTable from '../components/UserTable';
 import ConfirmModal from '../components/ConfirmModal';
 import NavigationHeader from '../components/NavigationHeader';
+import * as api from '../services/api';
 
 const UserList = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const users = useSelector(selectAllUsers);
+  const loading = useSelector(selectUsersLoading);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [actionTarget, setActionTarget] = useState(null);
   const [showActionConfirm, setShowActionConfirm] = useState(false);
   const [filters, setFilters] = useState({ q: '', role: 'all', status: 'all', sortBy: 'id', sortDir: 'asc' });
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const data = await api.getUsers();
-      setUsers(data || []);
-    } catch (err) {
-      console.error('Failed to load users', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   const handleView = (user) => {
     setSelectedUser(user);
@@ -47,13 +39,31 @@ const UserList = () => {
     try {
       const updated = { ...actionTarget, status: newStatus };
       await api.updateUser(actionTarget.id, updated);
-      // Update local list
-      setUsers((prev) => prev.map((u) => (u.id === actionTarget.id ? updated : u)));
+      // Refresh users list để có dữ liệu mới nhất
+      dispatch(fetchUsers());
     } catch (err) {
       console.error('Failed to update user status', err);
     } finally {
       setShowActionConfirm(false);
       setActionTarget(null);
+    }
+  };
+
+  // Handler riêng cho toggle admin status (nếu cần)
+  const handleToggleAdmin = async (userId) => {
+    try {
+      // Toggle role trong Redux state
+      dispatch(toggleAdminStatus(userId));
+      // Cập nhật trên server
+      const user = users.find(u => u.id === userId);
+      if (user) {
+        const newRole = user.role === 'admin' ? 'user' : 'admin';
+        await api.updateUser(userId, { ...user, role: newRole });
+        // Refresh để đồng bộ
+        dispatch(fetchUsers());
+      }
+    } catch (err) {
+      console.error('Failed to toggle admin status', err);
     }
   };
 

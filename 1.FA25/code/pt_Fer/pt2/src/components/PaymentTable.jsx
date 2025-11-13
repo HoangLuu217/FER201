@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Card, Spinner, Alert, Badge, Button, ButtonGroup } from 'react-bootstrap';
-import { usePayment } from '../contexts/PaymentContext';
+import { useDispatch, useSelector } from 'react-redux';
 import { useToast } from './ToastMessage';
 import { FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import ViewDetailsModal from './ViewDetailsModal';
 import EditPaymentModal from './EditPaymentModal';
 import ConfirmModal from './ConfirmModal';
+import { 
+    selectFilteredPayments, 
+    selectPaymentsLoading, 
+    selectPaymentsError, 
+    selectTotalAmount 
+} from '../store/selectors';
+import { deletePayment, applyFiltersAndSort } from '../store/paymentsSlice';
 
 const PaymentTable = () => {
-    const { payments, isLoading, error, totalAmount, deletePayment } = usePayment();
+    const dispatch = useDispatch();
+    const payments = useSelector(selectFilteredPayments);
+    const isLoading = useSelector(selectPaymentsLoading);
+    const error = useSelector(selectPaymentsError);
+    const totalAmount = useSelector(selectTotalAmount);
     const { showSuccess, showError } = useToast();
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [showViewModal, setShowViewModal] = useState(false);
@@ -49,20 +60,25 @@ const PaymentTable = () => {
         setShowDeleteModal(true);
     };
 
+    // Áp dụng filters và sort khi component mount
+    useEffect(() => {
+        dispatch(applyFiltersAndSort());
+    }, [dispatch]);
+
     const handleConfirmDelete = async () => {
         if (paymentToDelete) {
             const courseName = paymentToDelete.courseName;
-            const result = await deletePayment(paymentToDelete.id);
-            if (result.success) {
+            try {
+                await dispatch(deletePayment(paymentToDelete.id)).unwrap();
                 setShowDeleteModal(false);
                 setPaymentToDelete(null);
                 showSuccess(
                     `Đã xóa thanh toán "${courseName}" thành công!`,
                     'Xóa thành công'
                 );
-            } else {
+            } catch (error) {
                 showError(
-                    result.error || 'Không thể xóa thanh toán',
+                    error || 'Không thể xóa thanh toán',
                     'Lỗi xóa'
                 );
             }

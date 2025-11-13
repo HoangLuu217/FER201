@@ -52,7 +52,18 @@ export const addPayment = async (payment) => {
         const response = await API.post('/payments', payment);
         return response.data;
     } catch (error) {
-        throw new Error('Failed to add payment');
+        // Giữ nguyên error để có thể kiểm tra status code trong slice
+        throw error;
+    }
+};
+
+export const refundPayment = async (paymentId) => {
+    try {
+        // Giả sử có endpoint refund (có thể cần thêm vào JSON Server routes)
+        const response = await API.post(`/payments/${paymentId}/refund`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to refund payment');
     }
 };
 

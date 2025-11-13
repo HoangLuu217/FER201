@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Card, Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { usePayment } from '../contexts/PaymentContext';
+import { useDispatch, useSelector } from 'react-redux';
 import NavigationHeader from './NavigationHeader';
+import { createPayment } from '../store/paymentsSlice';
+import { selectUniqueSemesters, selectUniqueCourses } from '../store/selectors';
+import { useAuth } from '../contexts/AuthContext';
 
 const AddPaymentForm = () => {
     const navigate = useNavigate();
-    const { addPayment, getUniqueSemesters, getUniqueCourses } = usePayment();
+    const dispatch = useDispatch();
+    const { user } = useAuth();
+    const semesters = useSelector(selectUniqueSemesters);
+    const courses = useSelector(selectUniqueCourses);
     const [formData, setFormData] = useState({
         semester: '',
         courseName: '',
@@ -17,9 +23,6 @@ const AddPaymentForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
-
-    const semesters = getUniqueSemesters();
-    const courses = getUniqueCourses();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -70,21 +73,18 @@ const AddPaymentForm = () => {
 
         setIsLoading(true);
         try {
-            const result = await addPayment({
+            await dispatch(createPayment({
                 ...formData,
                 amount: Number(formData.amount),
-            });
-
-            if (result.success) {
-                setSuccess(true);
-                setTimeout(() => {
-                    navigate('/home');
-                }, 1500);
-            } else {
-                setError(result.error || 'Failed to add payment');
-            }
+                userId: user.id,
+            })).unwrap();
+            
+            setSuccess(true);
+            setTimeout(() => {
+                navigate('/home');
+            }, 1500);
         } catch (err) {
-            setError('An error occurred while adding payment');
+            setError(err || 'An error occurred while adding payment');
         } finally {
             setIsLoading(false);
         }

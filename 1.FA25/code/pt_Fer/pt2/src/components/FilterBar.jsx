@@ -1,28 +1,41 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, Form, Row, Col } from 'react-bootstrap';
-import { usePayment } from '../contexts/PaymentContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+    selectPaymentsFilters, 
+    selectPaymentsSortBy,
+    selectUniqueSemesters,
+    selectUniqueCourses
+} from '../store/selectors';
+import { setFilter, setSort, applyFiltersAndSort } from '../store/paymentsSlice';
 
 const FilterBar = () => {
-    const { filters, sortBy, setFilter, setSort, getUniqueSemesters, getUniqueCourses } = usePayment();
+    const dispatch = useDispatch();
+    const filters = useSelector(selectPaymentsFilters);
+    const sortBy = useSelector(selectPaymentsSortBy);
+    const semesters = useSelector(selectUniqueSemesters);
+    const courses = useSelector(selectUniqueCourses);
+    
+    // Áp dụng filters và sort khi có thay đổi
+    useEffect(() => {
+        dispatch(applyFiltersAndSort());
+    }, [dispatch, filters, sortBy]);
     
     const handleSearchChange = (e) => {
-        setFilter('search', e.target.value);
+        dispatch(setFilter({ field: 'search', value: e.target.value }));
     };
 
     const handleSemesterChange = (e) => {
-        setFilter('semester', e.target.value);
+        dispatch(setFilter({ field: 'semester', value: e.target.value }));
     };
 
     const handleCourseChange = (e) => {
-        setFilter('course', e.target.value);
+        dispatch(setFilter({ field: 'course', value: e.target.value }));
     };
 
     const handleSortChange = (e) => {
-        setSort(e.target.value);
+        dispatch(setSort(e.target.value));
     };
-
-    const semesters = getUniqueSemesters();
-    const courses = getUniqueCourses();
     
     return (
         <Card className="mb-4 shadow-sm">
